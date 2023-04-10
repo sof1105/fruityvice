@@ -1,0 +1,29 @@
+filters:
+  path: /api/filters
+  controller: App\Controller\FruitsController::filters
+fruits:
+  path: /api/fruits/{page}
+  controller: App\Controller\FruitsController::getFruits
+  defaults:
+    page: 1
+  requirements:
+    page: '\d+'
+setfav:
+  path: /api/fav/{id}
+  controller: App\Controller\FruitsController::setFav
+  methods: 'POST'
+  requirements:
+    id: '\d+'
+getfav:
+  path: /api/fav
+  controller: App\Controller\FruitsController::getFavs
+  methods: 'GET'
+deleteFav:
+  path: /api/deletefav/{id}
+  controller: App\Controller\FruitsController::deleteFav
+  methods: 'DELETE'
+index:
+  path: /{route}
+  controller: App\Controller\FruitsController::index
+  requirements:
+      route: ".*"

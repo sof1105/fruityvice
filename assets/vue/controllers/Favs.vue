@@ -1,0 +1,164 @@
+<template>
+    <b-container fluid>
+      <div class="page-link">
+          <router-link :to="'/'"><el-button type="success">Home page</el-button></router-link>
+        </div>
+      <el-row :gutter="20" class="filters">
+        <el-col  :span="6">
+          <el-input v-model="nameSearch" placeholder="Filter by name" />
+        </el-col>
+        <el-col  :span="6"><el-input v-model="familySearch" placeholder="Filter by family" /></el-col>
+        <el-col  :span="6">
+          <el-select v-model="nameSelectFilter" multiple placeholder="Select names" style="width: 240px">
+            <el-option v-for="item in nameFilterOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-col>
+        <el-col  :span="6">
+          <el-select v-model="familySelectFilter" multiple placeholder="Select families" style="width: 240px">
+            <el-option v-for="item in familyFilterOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-col>
+        
+      </el-row>
+      <el-table :data="fruits" style="width: 100%" v-if="tableMode">
+        <el-table-column prop="name" label="Name" width="180" />
+        <el-table-column prop="family" label="Family" width="180" />
+        <el-table-column prop="genus" label="Genus" width="180" />
+        <el-table-column prop="origorder" label="Order" width="180" />
+        <el-table-column label="Nutritions">
+          <el-table-column prop="carbohydrates" label="Carbohydrates" width="180" />
+          <el-table-column prop="protein" label="Protein" width="180" />
+          <el-table-column prop="fat" label="fat" width="180" />
+          <el-table-column prop="calories" label="Calories" width="180" />
+          <el-table-column prop="sugar" label="Sugar" width="180" />
+        </el-table-column>
+      </el-table>
+      <div class="fruit-box" v-if="!tableMode">
+        <el-card class="box-card" v-for="fruit in fruits">
+          <template #header>
+            <div class="card-header">
+              <span class="name">{{ fruit.name }}</span>
+            </div>
+          </template>
+          <el-row>
+            <div>family: </div><span>{{ fruit.family }}</span>
+          </el-row>
+          <el-row>
+            <div>genus:</div><span>{{ fruit.genus }}</span>
+          </el-row>
+          <el-row>
+            Nutritions:
+          </el-row>
+          <el-row>
+            <div>carbohydrates:</div><span>{{ fruit.carbohydrates }}</span>
+          </el-row>
+          <el-row>
+            <div>protein:</div><span>{{ fruit.protein }}</span>
+          </el-row>
+          <el-row>
+            <div>fat:</div><span>{{ fruit.fat }}</span>
+          </el-row>
+          <el-row>
+            <div>calories:</div><span>{{ fruit.calories }}</span>
+          </el-row>
+          <el-row>
+            <div>sugar:</div><span>{{ fruit.sugar }}</span>
+          </el-row>
+        </el-card>
+      </div>
+    </b-container>
+  </template>
+  
+  
+<script>
+import axios from "axios";
+import { debounce } from "../helpers.js";
+
+export default {
+    name: "FavFruits",
+    data() {
+        return {
+            fruits: null,
+            loading: false,
+            page: 1,
+            nameSearch: "",
+            familySearch: "",
+            nameFilterOptions: [],
+            familyFilterOptions: [],
+            nameSelectFilter: [],
+            familySelectFilter: [],
+            fruitApi: "/api/fruits/",
+            filtersApi: "/api/filters",
+            tableMode: true
+        };
+    },
+    mounted() {
+        this.getFruits();
+        this.getFilters();
+        this.debounceGetFruits = debounce(this.getFruits, 1000);
+    },
+    methods: {
+        async getFruits() {
+            try {
+                this.loading = true;
+                const params = {
+                    favs: true
+                };
+                if (this.nameSelectFilter && this.nameSelectFilter.length > 0) {
+                    params.nfilter = [...this.nameSelectFilter]
+                }
+                if (this.familySelectFilter && this.familySelectFilter.length > 0) {
+                    params.ffilter = [...this.familySelectFilter]
+                }
+                if (this.nameSearch) {
+                    params.name = this.nameSearch
+                }
+                if (this.familySearch) {
+                    params.family = this.familySearch;
+                }
+                const { status, data } = await axios(this.fruitApi + this.page, { params });
+                if (status !== 200) {
+                    throw "Error fetching data";
+                }
+                const { fruits, page, itemsPerPage, total } = data;
+                this.fruits = fruits;
+                this.total = total;
+                this.itemPerPage = itemsPerPage;
+            } catch (e) {
+                console.error(e);
+            } finally {
+                this.loading = false;
+            }
+        },
+        async getFilters() {
+            try {
+                const { status, data } = await axios(this.filtersApi);
+                if (status !== 200) {
+                    throw "Error fetching data";
+                }
+                const { names, families } = data;
+                this.nameFilterOptions = names;
+                this.familyFilterOptions = families;
+
+            } catch (e) {
+                console.error(e);
+            }
+        },
+    },
+    watch: {
+        nameSearch() {
+            this.debounceGetFruits();
+        },
+        familySearch() {
+            this.debounceGetFruits();
+        },
+        nameSelectFilter() {
+            this.debounceGetFruits();
+        },
+        familySelectFilter() {
+            this.debounceGetFruits()
+        },
+    },
+};
+</script>
+  

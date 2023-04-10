@@ -1,0 +1,74 @@
+h1.site-title {
+    margin: 0 auto;
+    font-size: 3rem;
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+}
+
+.fruit-box {
+    display: flex;
+    gap: 1rem;
+    justify-content: start;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.fruit-box .el-row {
+    justify-content: space-between;
+}
+
+.el-card {
+    width: 16rem;
+    height: 24rem;
+}
+
+.el-card>.el-card__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 63%;
+}
+
+.fav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.card-header {
+    display: flex;
+    justify-content: center;
+}
+
+.card-header>span.name {
+    font-weight: bold;
+}
+.filters{
+    max-width: 100rem;
+    gap: 1rem;
+}
+.filters .el-input {
+    width: 12rem;
+}
+
+.filters>* {
+    /* margin: 0 3rem; */
+}
+
+.page-link {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-direction: row-reverse;
+}
+
+.el-col-6 {
+    max-width: 25%;
+    flex: 0 0 23%;
+    padding: 1% 0;
+}
